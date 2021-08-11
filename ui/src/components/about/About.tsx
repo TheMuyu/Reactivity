@@ -1,0 +1,13 @@
+import { Message } from 'semantic-ui-react'
+
+const About = () => {
+    return (
+        <Message
+            icon='inbox'
+            header='About Reactivities'
+            content='Developed on React 17'
+        />
+    )
+}
+
+export default About
