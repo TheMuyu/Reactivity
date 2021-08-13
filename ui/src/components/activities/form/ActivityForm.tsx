@@ -1,18 +1,12 @@
-import React, { ChangeEvent, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { ChangeEvent, useState } from 'react'
 import { Button, Form, Segment } from 'semantic-ui-react'
-import { Activity } from '../../../app/models/activity'
+import { useStore } from '../../../app/stores/store'
 
-interface Props {
-    closeForm: () => void;
-    selectedActivity: Activity | undefined;
-    createOrEdit: (activity: Activity) => void;
-    deleteActivity: (id: string) => void;
-    submitting: boolean;
-}
 
-const ActivityForm = ({ closeForm, selectedActivity, createOrEdit, deleteActivity, submitting }: Props) => {
-
-    const initialState = selectedActivity ?? {
+const ActivityForm = () => {
+    const { activityStore } = useStore();
+    const initialState = activityStore.selectedActivity ?? {
         id: '',
         title: '',
         date: '',
@@ -25,8 +19,7 @@ const ActivityForm = ({ closeForm, selectedActivity, createOrEdit, deleteActivit
     const [activity, setActivity] = useState(initialState);
 
     const handleSubmit = () => {
-        createOrEdit(activity);
-        console.log(activity);
+        activity.id ? activityStore.updateActivity(activity) : activityStore.createActivity(activity);
     }
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -43,12 +36,11 @@ const ActivityForm = ({ closeForm, selectedActivity, createOrEdit, deleteActivit
                 <Form.Input type='date' placeholder="Date" value={activity.date} name='date' onChange={handleInputChange} />
                 <Form.Input placeholder="City" value={activity.city} name='city' onChange={handleInputChange} />
                 <Form.Input placeholder="Venue" value={activity.venue} name='venue' onChange={handleInputChange} />
-                <Button loading={submitting} floated='right' positive type='submit' content='Submit' />
-                <Button loading={submitting} onClick={() => deleteActivity(activity.id)} color='red' floated='right' type='button' content='Delete' />
-                <Button onClick={closeForm} floated='right' type='button' content='Cancel' />
+                <Button loading={activityStore.loading} floated='right' positive type='submit' content='Submit' />
+                <Button onClick={activityStore.closeForm} floated='right' type='button' content='Cancel' />
             </Form>
         </Segment>
     )
 }
 
-export default ActivityForm
+export default observer(ActivityForm)

@@ -1,33 +1,33 @@
+import { observer } from 'mobx-react-lite';
 import { Button, Card, Image } from 'semantic-ui-react'
-import { Activity } from '../../../app/models/activity'
+import Loading from '../../../app/layout/Loading';
+import { useStore } from '../../../app/stores/store';
 
-interface Props {
-    activity: Activity;
-    cancelSelectActivity: (id: string) => void;
-    openForm: (id: string) => void;
-}
 
-const ActivityDetails = ({ activity, cancelSelectActivity, openForm }: Props) => {
+const ActivityDetails = () => {
+    const { activityStore } = useStore();
+    const { selectedActivity } = activityStore;
+    if (!selectedActivity) return <Loading />;
     return (
         <Card fluid>
-            <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
+            <Image src={`/assets/categoryImages/${selectedActivity.category}.jpg`} />
             <Card.Content>
-                <Card.Header>{activity.title}</Card.Header>
+                <Card.Header>{selectedActivity.title}</Card.Header>
                 <Card.Meta>
-                    <span className='date'>{activity.date}</span>
+                    <span className='date'>{selectedActivity.date}</span>
                 </Card.Meta>
                 <Card.Description>
-                    {activity.description}
+                    {selectedActivity.description}
                 </Card.Description>
             </Card.Content>
             <Card.Content extra>
                 <Button.Group widths='2'>
-                    <Button basic onClick={() => openForm(activity.id)} color='blue' content='Edit' />
-                    <Button onClick={() => cancelSelectActivity(activity.id)} basic color='grey' content='Cancel' />
+                    <Button basic onClick={() => activityStore.openForm(selectedActivity.id)} color='blue' content='Edit' />
+                    <Button onClick={() => activityStore.cancelSelectedActivity()} basic color='grey' content='Cancel' />
                 </Button.Group>
             </Card.Content>
         </Card>
     )
 }
 
-export default ActivityDetails
+export default observer(ActivityDetails)
